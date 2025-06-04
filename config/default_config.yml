@@ -1,0 +1,16 @@
+# Relative path to the NANO inci file
+inci_path: /INCI/inci_nano.xlsx
+
+# Relative path to the Pollutants excel
+pollutants_path: /INCI/SchadstoffeToxFox_09092024.xlsx
+
+# Evaluation pipeline for data with ground truth
+image_path: /images  # Path to folder with images
+output_path: /output  # Path to folder where the output will be saved
+ground_truth_path: /ground_truth  # Ground truth path
+faiss_path: /index/  # Path where the faiss index will be saved
+
+# Postprocessing configurations - not to be touched
+inci_path_simple: /inci/inci_simple.json
+pollutants_path_simple: /inci/schadstoffliste.json
+synonym_path: /inci/pollutant_mapping.yml

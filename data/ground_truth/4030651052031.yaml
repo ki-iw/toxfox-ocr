@@ -1,0 +1,35 @@
+
+INCI_list:
+  - SODIUM BICARBONATE
+  - CITRIC ACID
+  - SODIUM LAURYL SULFOACETATE
+  - AROMA
+  # - SODIUM OCTAACETATE did not find this in the INCI-List
+  - SODIUM CHLORIDE
+  - CI 19140
+  - CI 42090
+brand: Tinti
+extracted_barcode: '4030651052031'
+id: '4030651052031'
+image_name: 4030651052031.jpg
+model: Samsung
+product_name: Bade Ring
+raw_ingredients_list: 'Ingredients:
+
+  Sodium Bicarbonate
+
+  Citric Acid
+
+  Sodium Lauryl
+
+  Sulfoacetate
+
+  Aroma
+
+  Sodium Octaacetate
+
+  Sodium Chloride
+
+  Cl 19140
+
+  CI 42090'

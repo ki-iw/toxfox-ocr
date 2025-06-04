@@ -1,0 +1,14 @@
+opencv-python==4.11.0.86
+uvicorn==0.34.0
+fastapi==0.115.8
+PyYAML==6.0.2
+numpy==1.26.4
+dotmap
+python-dotenv
+sty
+openpyxl
+sentence_transformers
+pandas
+fuzzywuzzy
+easyocr
+python-multipart

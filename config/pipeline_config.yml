@@ -1,0 +1,22 @@
+preprocessing:
+  steps:
+    gray:
+      enabled: False
+    blur:
+      enabled: False
+    threshold:
+      enabled: False
+
+ocr:
+  bb_threshold_factor: 0.8
+
+postprocessing:
+  FAISSIndexer_model_name: all-MiniLM-L6-v2
+  ingredient_threshold: 0.8
+  typo_threshold: 0.8
+  misspelling_set: ["0il", "oi", "ol", "oill", "oll", "oli"]
+  detection_type: both
+
+evaluation:
+  method: levenshtein # levenstein or exact
+  threshold: 80
