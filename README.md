@@ -5,7 +5,7 @@ This is a FastAPI webbapplication that takes an image of ingredients and gives b
 
 The images used to develop the algorithm are "cropped images", where the the unrelevant parts of the picture, i.e not part of the ingredients list, is cropped out. Example:
 
-<img src="data/example/example_image.png" width=70% height=70%>
+<img src="assets/ocr-module-flowchart.jpg" width=70% height=70%>
 
 Additionally there is also an evaluation pipeline, see **Evaluation** for more details.
 
@@ -245,3 +245,29 @@ $ poetry shell
 - **Postprocessing**
 
   In the postprocessing step the OCR output is matched to INCI ingredients provided in the excel file with INCI ingredients. The algorithm used for similarity search is [Faiss](https://ai.meta.com/tools/faiss/) (Facebook AI Similarity Search), where the different words found in the OCR output are matched to a database with embedded INCI ingredients. The algorithm tries to find "best matches", i.e allowing for certain errors in the OCR output, and favors longer matches. For example, if "nitrid", "acid" and "nitrid acid" were all INCI ingredients, it would first try to find "nitrid acid" as a match.
+
+# Collaborators
+
+The code for this project has been developed through a collaborative effort between BUND Germany and KI-Ideenwerkstatt, technical implementation by Birds on Mars.
+
+<a href="https://ki-ideenwerkstatt.de" target="_blank" rel="noopener noreferrer">
+  <img src="assets/KI-IW-logo.png" alt="KI Ideenwerkstatt" width="300">
+</a>
+<br>
+<a href="https://birdsonmars.com" target="_blank" rel="noopener noreferrer">
+  <img src="assets/BoM_Logo_Signatur_groß.jpg" alt="Birds On Mars" width="300">
+</a>
+<p></p>
+An AI initiative by
+
+<a href="https://www.bmuv.de" target="_blank" rel="noopener noreferrer">
+  <img src="assets/bmuv.svg" alt="Bundesministerium für Umwelt, Naturschutz, nukleare Sicherheit und Verbraucherschutz" width="300">
+</a>
+<p></p>
+In the context of
+
+<a href="https://civic-coding.de" target="_blank" rel="noopener noreferrer">
+  <img src="assets/civic.svg" alt="Civic Coding" width="300">
+</a>
+
+
