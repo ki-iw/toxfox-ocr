@@ -1,11 +1,16 @@
 <!-- omit in toc -->
-# ZUG-ToxFox
+# OCR Module for the ToxFox-App
+
+> [!TIP]
+> This is a release fork of the repository maintained by BUND germany. Check it out <a href="https://github.com/bundgermany/toxfox-ocr-module" target="_blank" rel="noopener noreferrer">here</a> for new features and releases. 
+
+
 OCR solutions for ToxFox application.
 This is a FastAPI webbapplication that takes an image of ingredients and gives back a list of INCI mapped ingredients and found pollutants in the image.
 
 The images used to develop the algorithm are "cropped images", where the the unrelevant parts of the picture, i.e not part of the ingredients list, is cropped out. Example:
 
-<img src="assets/ocr-module-flowchart.jpg" width=70% height=70%>
+<img src="assets/ocr-module-flowchart.jpg" width=100% height=100%>
 
 Additionally there is also an evaluation pipeline, see **Evaluation** for more details.
 
@@ -249,7 +254,7 @@ $ poetry shell
 # Collaborators
 
 The code for this project has been developed through a collaborative effort between BUND Germany and KI-Ideenwerkstatt, technical implementation by Birds on Mars.
-
+<br>
 <a href="https://ki-ideenwerkstatt.de" target="_blank" rel="noopener noreferrer">
   <img src="assets/KI-IW-logo.png" alt="KI Ideenwerkstatt" width="300">
 </a>
@@ -259,13 +264,13 @@ The code for this project has been developed through a collaborative effort betw
 </a>
 <p></p>
 An AI initiative by
-
-<a href="https://www.bmuv.de" target="_blank" rel="noopener noreferrer">
-  <img src="assets/bmuv.svg" alt="Bundesministerium für Umwelt, Naturschutz, nukleare Sicherheit und Verbraucherschutz" width="300">
+<br>
+<a href="https://www.bundesumweltministerium.de/" target="_blank" rel="noopener noreferrer">
+  <img src="assets/bmukn.svg" alt="Bundesministerium für Umwelt, Klimaschutz, Naturschutz und nukleare Sicherheit" width="300">
 </a>
 <p></p>
 In the context of
-
+<br>
 <a href="https://civic-coding.de" target="_blank" rel="noopener noreferrer">
   <img src="assets/civic.svg" alt="Civic Coding" width="300">
 </a>
