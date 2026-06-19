@@ -72,19 +72,55 @@ make docker_up
 ```
 
 ## Without Docker
-To run the project without docker, you need to create the environment locally.
-This project uses Anaconda to manage the environment, and ```poetry``` to manage its dependencies.
-See **Installing Project** below for a step-by-step.
+You can run the service on a CPU-only machine without docker. There are two ways to set up the environment:
+
+**Option A — lightweight CPU-only setup (venv + pip)**
+
+The simplest way to run the API locally; needs no GPU. Requires Python 3.12.
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+**Option B — full conda + poetry setup**
+
+Use this if you also want the development tooling. This project uses Anaconda to manage the environment and ```poetry``` to manage its dependencies. See **Installing Project** below for a step-by-step.
 
 Once the environment is installed, you can run the application with:
 ```bash
-python zug_toxfox
+python -m zug_toxfox
 ```
-This starts the FastAPI service. After starting the service, look at the application and try out the endpoints at the URL:
+> [!IMPORTANT]
+> Use the module form ```python -m zug_toxfox```. Running ```python zug_toxfox``` directly fails with ```ModuleNotFoundError: No module named 'zug_toxfox'```.
+
+This starts the FastAPI service on port **8502**. After starting the service, try out the endpoints at the URL:
 ```
-http://localhost:8000/docs
+http://127.0.0.1:8502/docs
 ```
+By default the service binds to ```127.0.0.1``` (local only). The bind address is configurable via the ```HOST``` and ```PORT``` environment variables — set ```HOST``` to ```0.0.0.0``` to expose the service on all interfaces, or to a specific IP to bind only to that interface:
+```bash
+HOST=0.0.0.0 PORT=8502 python -m zug_toxfox
+```
+The helper script ```./run_api.sh``` sets CPU-friendly thread limits and binds to ```0.0.0.0``` by default, so the service is reachable over the network without hardcoding any address. To restrict it to one specific IP without committing that IP, run ```HOST=<your-ip> ./run_api.sh``` or set ```HOST``` in the (git-ignored) ```.env``` file.
+
 More information on the endpoints in the **FastAPI** chapter.
+
+> [!NOTE]
+> **Memory / hardware.** A GPU is optional and only speeds up OCR — it is not required. On CPU the service peaks at roughly **3–4 GB RAM** (largest test images; ~4 GB even under several concurrent requests), so about **4 GB of free RAM** is enough and no swap is needed. Memory stays bounded because images are downscaled to ≤ 3 MPixel before OCR, torch threads are capped, and OCR runs single-flight (one image at a time).
+
+> [!TIP]
+> **Tuning throughput vs. memory.** Two knobs trade memory for speed/quality — loosen them when you have plenty of RAM or a GPU:
+> - ```max_pixels``` in ```config/pipeline_config.yml``` caps image size before OCR (default ```3000000```). Raise it for higher-resolution OCR, or set ```0``` to disable downscaling entirely.
+> - ```ocr_semaphore = asyncio.Semaphore(1)``` in ```zug_toxfox/__main__.py``` processes one image at a time. Increase it to allow concurrent OCR (each in-flight image adds to peak memory).
+
+## Frontend dashboard
+Besides the API there is a small **Streamlit dashboard** (```frontend/dashboard.py```) for trying the pipeline interactively. It loads the pipeline directly (it does not call the API). Install its dependencies and run it:
+```bash
+pip install -r frontend/requirements.txt
+streamlit run frontend/dashboard.py --server.address 0.0.0.0
+```
+This serves the dashboard on port **8501** (```http://<host>:8501```). As with the API, binding to ```0.0.0.0``` makes it reachable over the network; omit ```--server.address 0.0.0.0``` to keep it local only.
 
 # FastAPI
 When the fast api application is starting up, it will initially process the given INCI list and pollutants list before the application can be used, which takes a few moments.
@@ -92,7 +128,7 @@ If you use docker, you can try out the endpoints at URL:
 ```
 http://localhost:8502/docs
 ```
-Or if you run outside of docker, check the terminal for eg: ```INFO: Uvicorn running on http://127.0.0.1:8501```, and add a ```/docs``` at the end.
+Or if you run outside of docker, check the terminal for eg: ```INFO: Uvicorn running on http://127.0.0.1:8502```, and add a ```/docs``` at the end.
 - Click on the endpoint that you wish to try out at the button **"try it out"**.
 - For the process_image endpoint, you upload the image that you wish to process and click on **excecute**. For the other two endpoints you just click excecute.
 
@@ -164,7 +200,7 @@ where each line is the correct ingredient found in the INCI-list in the product.
 ## Run evaluation pipeline
 Once that is setup, you can run the evaluation pipeline via:
 ```bash
-python zug_toxfox/pipeline.py
+python -m zug_toxfox.pipeline
 ```
 ## Configuration
 There are two files that can be configured, those can be found under the ```config``` folder.

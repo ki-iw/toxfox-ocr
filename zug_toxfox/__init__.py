@@ -1,4 +1,14 @@
 import os
+
+# Bound CPU thread pools BEFORE torch/numpy are imported. On CPU-only hosts torch
+# otherwise spawns one worker per core, and the transient OCR buffers can push peak
+# RSS high enough to get OOM-killed on a small machine. Env vars (set e.g. by
+# run_api.sh) take precedence; these are just safe defaults. set_num_threads below
+# enforces it at runtime too, since OpenMP reads these only at import time.
+for _thread_var in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS"):
+    os.environ.setdefault(_thread_var, "2")
+os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+
 from importlib import metadata
 from importlib.metadata import version
 
@@ -30,7 +40,9 @@ if torch.cuda.is_available():
 elif torch.backends.mps.is_available():
     log.info("Running on CUDA with MPS!")
 else:
-    log.info("Running on CPU!")
+    # Enforce the thread cap at runtime (env vars only affect OpenMP at import time).
+    torch.set_num_threads(int(os.environ.get("OMP_NUM_THREADS", "2")))
+    log.info("Running on CPU! (torch threads capped at %d)", torch.get_num_threads())
 
 try:
     __version__ = version("zug_toxfox")

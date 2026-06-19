@@ -1,8 +1,8 @@
 # Relative path to the NANO inci file
-inci_path: /INCI/inci_nano.xlsx
+inci_path: /inci/inci_nano.xlsx
 
 # Relative path to the Pollutants excel
-pollutants_path: /INCI/SchadstoffeToxFox_09092024.xlsx
+pollutants_path: /inci/SchadstoffeToxFox_09092024.xlsx
 
 # Evaluation pipeline for data with ground truth
 image_path: /images  # Path to folder with images

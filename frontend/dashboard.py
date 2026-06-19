@@ -1,15 +1,30 @@
+import sys
+from pathlib import Path
+
+# `streamlit run frontend/dashboard.py` puts this file's folder (frontend/) on sys.path,
+# not the project root where the zug_toxfox package lives. Add the project root so the
+# import below resolves regardless of the directory the app is launched from.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import cv2
 import numpy as np
 import streamlit as st
 
 from zug_toxfox import getLogger
+from zug_toxfox.modules.postprocessing import FAISSIndexer
 from zug_toxfox.pipeline import Pipeline
 
 log = getLogger(__name__)
 
-pipeline = Pipeline(
-    image_folder="", output_path="", inci_path="data/inci/inci.json", config_path="zug_toxfox/pipeline_config.yaml"
-)
+
+@st.cache_resource
+def get_pipeline() -> Pipeline:
+    """Build the pipeline once and cache it across reruns."""
+    indexer = FAISSIndexer()
+    return Pipeline(indexer=indexer, evaluation=False)
+
+
+pipeline = get_pipeline()
 
 # Set the title of the app
 st.title("ToxFox Dashboard")
@@ -22,24 +37,20 @@ uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png
 if uploaded_file is not None:
     # Open the image file
     file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-    image = cv2.imdecode(file_bytes, 1)
+    image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
-    # Convert the image from BGR to RGB
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-    # Display the image
-    st.image(image, caption="Uploaded Image.", use_column_width=True)
+    # Display the image (convert from BGR to RGB for correct colors)
+    st.image(cv2.cvtColor(image, cv2.COLOR_BGR2RGB), caption="Uploaded Image.", width="stretch")
 
     # Add a submit button
     if st.button("Submit"):
         with st.spinner("Processing image..."):
-            # Processing image here
-            processed_image = pipeline.preprocessor.preprocess_image(image)
-            detected_ingredients = pipeline.ocr.process_image(processed_image)
+            result = pipeline.process_image(image)
 
-            log.info("Detected Ingredients: (%s), %s", len(detected_ingredients), detected_ingredients)
+            log.info("Result: %s", result)
 
-            corrected_ingredients = pipeline.postprocessor.get_ingredients(detected_ingredients)
+            st.subheader("Ingredients")
+            st.write(result["ingredients"] or "None found")
 
-            log.info("Corrected Ingredients: (%s), %s", len(corrected_ingredients), corrected_ingredients)
-            st.write(f"Detected Ingredients: {corrected_ingredients}")
+            st.subheader("Pollutants")
+            st.write(result["pollutants"] or "None found")

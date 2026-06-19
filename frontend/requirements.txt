@@ -1,0 +1,9 @@
+# Dependencies for the Streamlit dashboard (frontend/dashboard.py).
+# Pulls in the core pipeline requirements and adds Streamlit on top, so:
+#   pip install -r frontend/requirements.txt
+# installs everything the dashboard needs.
+#
+# Pinned to <1.58 is NOT required here because the API stack was upgraded in lockstep
+# (fastapi/starlette/uvicorn); 1.58 is the first Starlette-based Streamlit and works with it.
+-r ../requirements.txt
+streamlit==1.58.0
