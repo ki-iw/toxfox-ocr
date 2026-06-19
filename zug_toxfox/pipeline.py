@@ -72,7 +72,7 @@ class Pipeline:
             # cv2.imwrite(os.path.join(image_output_path, "bb_image.png"), image_bb)  # type: ignore
 
         if self.evaluation is not None:
-            self.evaluation.evaluate(result["ingredients"], Path(image_path).stem, self.evaluation_method)
+            self.evaluation.evaluate(result["ingredients"], Path(image_path).stem, self.evaluation.method)
 
         log.info("Saving result to %s", image_output_path)
         with open(os.path.join(image_output_path, "ocr.txt"), "w") as text_file:
@@ -89,7 +89,7 @@ class Pipeline:
             image_paths = get_image_paths(default_config.image_path)
 
             for i, image_path in enumerate(image_paths):
-                log.info("Processing image %s / %s, %s", i + 1, len(image_path), image_path)
+                log.info("Processing image %s / %s, %s", i + 1, len(image_paths), image_path)
                 self.process_image_path(image_path, output_folder, debug)
 
             if self.evaluation is not None:
@@ -100,22 +100,26 @@ class Pipeline:
                     accuracy,
                     f1,
                 )
+                if debug:
+                    save_run_info(pipeline_config, self.evaluation.method, output_folder, run_id, accuracy, f1)
 
-            if debug:
-                save_run_info(pipeline_config, self.evaluation.method, output_folder, run_id, accuracy, f1)
+            if debug and torch.cuda.is_available():
                 log.info(f"Max memory usage: {torch.cuda.max_memory_allocated()/1000000000:.1f}GB")
             log.info(f"Run {run_id} completed.")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="OCR Pipeline")
-    parser.add_argument("--config_path", type=str, default="zug_toxfox/pipeline_config.yaml")
-    parser.add_argument("--debug", type=str2bool, default=True)
+    parser.add_argument("--debug", type=str2bool, default=False)
 
     args = parser.parse_args()
 
     log.info(
-        "Processing images from %s and saving output to %s, debug=%s", args.image_folder, args.output_path, args.debug
+        "Processing images from %s and saving output to %s, debug=%s",
+        default_config.image_path,
+        default_config.output_path,
+        args.debug,
     )
-    pipeline = Pipeline(args.image_folder, args.output_path, args.config_path)
+    indexer = FAISSIndexer()
+    pipeline = Pipeline(indexer=indexer, evaluation=True)
     pipeline.main(debug=args.debug)

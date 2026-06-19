@@ -1,8 +1,8 @@
-opencv-python==4.11.0.86
-uvicorn==0.34.0
-fastapi==0.115.8
-PyYAML==6.0.2
-numpy==1.26.4
+opencv-python==4.13.0.92
+uvicorn==0.49.0
+fastapi==0.137.2
+PyYAML==6.0.3
+numpy==2.4.6
 dotmap
 python-dotenv
 sty

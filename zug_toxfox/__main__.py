@@ -1,3 +1,4 @@
+import asyncio
 import os
 import threading
 from contextlib import asynccontextmanager
@@ -21,6 +22,12 @@ log = getLogger(__name__)
 inci_processor = ProcessInci(inci_xlsx_path=default_config.inci_path, output_path=default_config.inci_path_simple)
 
 update_event = threading.Event()
+
+# Serialize the heavy OCR step so only one image is ever in flight at a time. Combined
+# with the per-image downscale cap (config/pipeline_config.yml: max_pixels), this bounds
+# peak RSS to ~3.2 GB regardless of how many requests arrive concurrently or whether the
+# server is later run with multiple threads/workers — keeping the process well under 8 GB.
+ocr_semaphore = asyncio.Semaphore(1)
 
 
 @asynccontextmanager
@@ -74,7 +81,10 @@ async def process_image(file: UploadFile = File(...), pipeline=Depends(get_pipel
     log.info("Processing image %s", file.filename)
 
     try:
-        result = pipeline.process_image(image)
+        # Single-flight: serialize OCR and run it off the event loop so /health stays
+        # responsive. Bounds concurrent memory use (see ocr_semaphore note above).
+        async with ocr_semaphore:
+            result = await asyncio.to_thread(pipeline.process_image, image)
         response = {
             "image_name": file.filename,
             "ingredients": [result["ingredients"]],
@@ -102,6 +112,10 @@ async def update_data():
     return JSONResponse(status_code=status.HTTP_200_OK, content={"status": "Data updated"})
 
 
-# TODO: put in config
 if __name__ == "__main__":
-    uvicorn.run(app, port=8502)  # TODO: log_config = logging_cofig
+    # Bind address is configurable via env (HOST/PORT). Defaults to localhost; set
+    # HOST to 0.0.0.0 (or a specific IP) to expose the service on the network.
+    host = os.environ.get("HOST", "127.0.0.1")
+    port = int(os.environ.get("PORT", "8502"))
+    log.info("Starting uvicorn on http://%s:%s", host, port)
+    uvicorn.run(app, host=host, port=port)

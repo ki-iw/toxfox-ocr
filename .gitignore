@@ -1,0 +1,15 @@
+# Local environment / secrets — keep machine-specific values (e.g. HOST, BASE_PATH) out of git
+.env
+.env.*
+
+# Python virtual environment
+.venv/
+venv/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

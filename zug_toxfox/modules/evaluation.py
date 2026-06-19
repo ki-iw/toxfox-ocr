@@ -13,7 +13,7 @@ class Evaluation:
     def __init__(
         self, threshold: float = pipeline_config.evaluation.threshold, method: str = pipeline_config.evaluation.method
     ):
-        self.ground_truth_path = default_config.evaluation.ground_truth_path
+        self.ground_truth_path = default_config.ground_truth_path
         self.method = method
         self.threshold = threshold
         self.acc_levenshtein: list[float] = []
@@ -78,15 +78,15 @@ class Evaluation:
             self.acc_levenshtein.append(tp_rate_levenshtein)
             self.f1_levenshtein.append(f1_levenshtein)
 
-    def get_final_metric(self):
-        if self.evaluation_method == "exact":
+    def get_final_metrics(self):
+        if self.method == "exact":
             accuracy, f1 = (
-                round(np.mean(self.evaluation.acc_levenshtein), 2),
-                round(np.mean(self.evaluation.f1_levenshtein), 2),
+                round(np.mean(self.acc_exact), 2),
+                round(np.mean(self.f1_exact), 2),
             )
         else:
             accuracy, f1 = (
-                round(np.mean(self.evaluation.acc_levenshtein), 2),
-                round(np.mean(self.evaluation.f1_levenshtein), 2),
+                round(np.mean(self.acc_levenshtein), 2),
+                round(np.mean(self.f1_levenshtein), 2),
             )
         return accuracy, f1

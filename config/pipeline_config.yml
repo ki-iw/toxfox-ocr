@@ -1,4 +1,7 @@
 preprocessing:
+  # Downscale images whose pixel count exceeds this, preserving aspect ratio.
+  # Keeps EasyOCR memory bounded on machines without much RAM. Set to 0 to disable.
+  max_pixels: 3000000
   steps:
     gray:
       enabled: False
